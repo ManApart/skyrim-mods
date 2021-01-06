@@ -12,8 +12,6 @@ Scriptname AKAchievementScript extends ObjectReference
 ;You're a big time cheater for using this, you know... :D
 
 ;http://www.uesp.net/wiki/Skyrim:Achievements
-;add the line below if you arn't if you're gotten that achievement or not. That way you can search that phrase latter to check it.
-;Not sure
 
 Event OnRead()
 
@@ -50,7 +48,7 @@ Event OnRead()
 ;Darkness Returns			
 			Game.AddAchievement(16)
 ;One with the Shadows			
-			;Game.AddAchievement(17)
+			Game.AddAchievement(17)
 ;With Friends Like These...			
 			Game.AddAchievement(18)
 ;Bound Until Death			
@@ -59,7 +57,7 @@ Event OnRead()
 			Game.AddAchievement(20)
 ;Taking Sides			
 			Game.AddAchievement(21)
-;War Hero		
+;War Hero			
 			Game.AddAchievement(22)
 ;Hero of Skyrim			
 			Game.AddAchievement(23)			
@@ -68,26 +66,25 @@ Event OnRead()
 ; Hero of the People achievement
 			Game.AddAchievement(25)
 ;Hard Worker
-;Not sure
-			;Game.AddAchievement(26)
+			Game.AddAchievement(26)
 ; Thief achievement	
 			Game.AddAchievement(27)		
 ;Snake Tongue	
 			Game.AddAchievement(28)
 ;Blessed			
 			Game.AddAchievement(29)
-;Standing Stones		
+;Standing Stones			
 			Game.AddAchievement(30)
 ;Citizen			
 			Game.AddAchievement(31)
 ;Wanted			
-			;Game.AddAchievement(32)
+			Game.AddAchievement(32)
 ;Married			
 			Game.AddAchievement(33)			
 ;Artificer			
 			Game.AddAchievement(34)
 ; Master Criminal achievement			
-			;Game.AddAchievement(35)
+			Game.AddAchievement(35)
 ; Golden Touch achievement
 			Game.AddAchievement(36)
 ; Delver achievement		
@@ -101,7 +98,7 @@ Event OnRead()
 ;Daedric Influence
 			Game.AddAchievement(41)	
 ;Oblivion Walker
-			;Game.AddAchievement(42)
+			Game.AddAchievement(42)
 ; Dragon Soul achievement
 			Game.AddAchievement(43)
 ; Dragon Hunter achievement
@@ -119,5 +116,5 @@ Event OnRead()
 ; Master achievement	
 			Game.AddAchievement(50)
 
-debug.notification("Achievements unlocked!")
+
 endevent

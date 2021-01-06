@@ -1,0 +1,1 @@
+Scriptname akfotDintroend extends TopicInfo  

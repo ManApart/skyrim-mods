@@ -1,0 +1,1 @@
+Scriptname AKGravHamScript extends ObjectReference  

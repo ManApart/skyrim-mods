@@ -1,0 +1,1 @@
+Scriptname AKKillitusCureScript extends ObjectReference  

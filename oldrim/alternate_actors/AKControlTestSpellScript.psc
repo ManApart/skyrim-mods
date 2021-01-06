@@ -11,11 +11,23 @@ int I
 int size
 headpart temppart
 Spell Property AbFamiliarFlameCloak Auto
+ObjectReference Property lute Auto
 
 
 Event OnEffectStart(Actor akTarget, Actor akCaster) 
+Debug.Notification("Spell cast")
 actorbase akbasebase = aktarget.GetActorBase()
 actorbase akcastbase = akcaster.GetActorBase()
+String aktexturepath = "Textures\\sky\\masser_full.dds" 	; defaultdiffuse.dds
+String aknode = "NPC Head [Head]"	; MaleHeadIMF MaleHead.nif
+i = 0
+while i < 9
+	niOverride.AddNodeOverrideString(akTarget, False, aknode, 9, i, aktexturepath, False)
+	niOverride.AddNodeOverrideString(lute, false, "Lute01:0", 9, i, aktexturepath, false)	;test/control group
+	i += 1
+EndWhile
+NiOverride.ApplyNodeOverrides(lute)
+aktarget.queueninodeupdate()
 
 ;akcaster.AddSpell(AbFamiliarFlameCloak)
 akquest2.AKFaceRecall(akcaster, aktarget, 10)

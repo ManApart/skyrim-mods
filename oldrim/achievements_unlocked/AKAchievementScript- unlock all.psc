@@ -1,19 +1,19 @@
 Scriptname AKAchievementScript extends ObjectReference  
 
 
-
+;Notes to myself:
 ; Define a property that points to the script on this quest, and call the function
-;
 ; Declare this in your script:
 ; 	AchievementsScript Property AchievementsQuest Auto
 ;
 ; Call this function:
 ; 	AchievementsQuest.IncSideQuests()
-;You're a big time cheater for using this, you know... :D
+;End notes to myself
 
+;Lines preceded by a semicolon are ignored by the compiler. Use it to make notes of comment out (make the game ignore) a line. :)
+;The skyrim wiki can tell you more about achievements, follow this link:
 ;http://www.uesp.net/wiki/Skyrim:Achievements
-;add the line below if you arn't if you're gotten that achievement or not. That way you can search that phrase latter to check it.
-;Not sure
+
 
 Event OnRead()
 
@@ -50,7 +50,7 @@ Event OnRead()
 ;Darkness Returns			
 			Game.AddAchievement(16)
 ;One with the Shadows			
-			;Game.AddAchievement(17)
+			Game.AddAchievement(17)
 ;With Friends Like These...			
 			Game.AddAchievement(18)
 ;Bound Until Death			
@@ -64,12 +64,11 @@ Event OnRead()
 ;Hero of Skyrim			
 			Game.AddAchievement(23)			
 ;Sideways
-		Game.AddAchievement(24)
+			Game.AddAchievement(24)
 ; Hero of the People achievement
 			Game.AddAchievement(25)
 ;Hard Worker
-;Not sure
-			;Game.AddAchievement(26)
+			Game.AddAchievement(26)
 ; Thief achievement	
 			Game.AddAchievement(27)		
 ;Snake Tongue	
@@ -81,13 +80,13 @@ Event OnRead()
 ;Citizen			
 			Game.AddAchievement(31)
 ;Wanted			
-			;Game.AddAchievement(32)
+			Game.AddAchievement(32)
 ;Married			
 			Game.AddAchievement(33)			
 ;Artificer			
 			Game.AddAchievement(34)
 ; Master Criminal achievement			
-			;Game.AddAchievement(35)
+			Game.AddAchievement(35)
 ; Golden Touch achievement
 			Game.AddAchievement(36)
 ; Delver achievement		
@@ -101,7 +100,7 @@ Event OnRead()
 ;Daedric Influence
 			Game.AddAchievement(41)	
 ;Oblivion Walker
-			;Game.AddAchievement(42)
+			Game.AddAchievement(42)
 ; Dragon Soul achievement
 			Game.AddAchievement(43)
 ; Dragon Hunter achievement
@@ -119,5 +118,67 @@ Event OnRead()
 ; Master achievement	
 			Game.AddAchievement(50)
 
-debug.notification("Achievements unlocked!")
+debug.notification("Vanilla Achievements unlocked!")
+
+;--------------------------------------------------DAWNGUARD--------------------------------------------------
+;NOTE: These Achievements Not yet tested! Make sure they unlock properly! NEED CONFIRMATION
+
+;Awakening
+			Game.AddAchievement(51)
+;Beyond Death
+			Game.AddAchievement(52)
+;Kindred Judgement
+			Game.AddAchievement(53)
+;Lost to the Ages	
+			Game.AddAchievement(54)
+;Soul Tear	
+			Game.AddAchievement(55)
+;Auriel's Bow	
+			Game.AddAchievement(56)
+;Werewolf Mastered	
+			Game.AddAchievement(57)
+;Vampire Mastered	
+			Game.AddAchievement(58)
+;A New You
+			Game.AddAchievement(59)
+;Legend
+			Game.AddAchievement(60)
+
+debug.notification("Dawnguard Achievements unlocked!")
+;--------------------------------------------------HEARTHFIRE--------------------------------------------------
+;Proud Parent
+			Game.AddAchievement(61)
+;Landowner		  					;confirmed with CK	
+			Game.AddAchievement(62)
+;Architect
+			Game.AddAchievement(63)
+;Land Baron
+			Game.AddAchievement(64)
+;Master Architect
+			Game.AddAchievement(65)
+debug.notification("Hearthfire Achievements unlocked!")
+
+;--------------------------------------------------Dragonborn--------------------------------------------------
+;Outlander	
+			Game.AddAchievement(66)
+;The Temple of Miraak  				;confirmed with CK
+			Game.AddAchievement(67) 
+;The Path of Knowledge
+			Game.AddAchievement(68)
+;At the Summit of Apocrypha
+			Game.AddAchievement(69)
+;Dragon Aspect
+			Game.AddAchievement(70)
+;Hidden Knowledge
+			Game.AddAchievement(71)
+;Stalhrim Crafter
+			Game.AddAchievement(72)
+;Dragonrider	
+			Game.AddAchievement(73)
+;Raven Rock Owner
+			Game.AddAchievement(74)
+;Solstheim Explorer
+			Game.AddAchievement(75)
+debug.notification("Dragonborn Achievements unlocked!")
+
 endevent
