@@ -2,83 +2,99 @@ Scriptname AKAutoSortQuest extends Quest
 
 Int Property Chest1Type = 26 Auto  
 
-FormList Property chests  Auto  
-FormList[] testThings
+ObjectReference[] chests
+FormList[] keywords 
+FormList[] Property testThings Auto
 
 function addContainer(ObjectReference containerToAdd)
   ;initialize list
-  if (testThings == None)
-    testThings = new FormList[100]
+  if (chests == None || chests.Length == 0)
+    chests = new ObjectReference[100]
+    keywords = new FormList[100]
+    Debug.Notification("Created " + chests.Length + " slots")
+  endif
+    
+  Int slot = findEmptyContainerSlot()
+  if (slot != -1)
+    chests[slot] = containerToAdd
+    Debug.Notification("Added" + containerToAdd.GetDisplayName() + " to slot " + slot)    
+  else
+    Debug.Notification("Can't add more chests, please remove some first")
   endif
 
-
-  ; self.chests.AddForm(containerToAdd)
-  AKAutoSortContainer newContainer
-  newContainer.chest = containerToAdd
-  self.chests.AddForm(newContainer)
-
-  Debug.Notification("Container Added" + newContainer.chest.GetDisplayName())
-  Debug.Notification(self.chests.GetSize() + " containers are remembered")
+ 
 EndFunction
 
 function removeContainer(ObjectReference containerToRemove)
-  AKAutoSortContainer chest = findContainer(containerToRemove)
-  if (chest != None)
-    self.chests.RemoveAddedForm(chest)
-    Debug.Notification("Container Removed")
+  Int slot = findContainerSlot(containerToRemove)
+  if (slot != -1)
+    chests[slot] = None
+    Debug.Notification("Container Removed from slot " + slot)
   endif
 EndFunction
 
-function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToAdd)
-  AKAutoSortContainer chest = findContainer(chestToChange)
-  if (chest != None)
-    chest.keywords.addForm(keywordToAdd)
-  endif
+; function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToAdd)
+;   Int slot = findContainer(chestToChange)
+;   if (chest != None)
+;     chest.keywords.addForm(keywordToAdd)
+;   endif
 
-EndFunction
+; EndFunction
 
-function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
-  AKAutoSortContainer chest = findContainer(chestToChange)
-  if (chest != None)
-    chest.keywords.RemoveAddedForm(keywordToRemove)
-  endif
-EndFunction
+; function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
+;   Int slot = findContainer(chestToChange)
+;   if (chest != None)
+;     chest.keywords.RemoveAddedForm(keywordToRemove)
+;   endif
+; EndFunction
 
-AKAutoSortContainer function findContainer(ObjectReference chest)
-  Int i = self.chests.GetSize()
+Int function findContainerSlot(ObjectReference chest)
+  Int i = chests.Length
   
   While i > 0
-    i -= 1
-    AKAutoSortContainer possible = chests.GetAt(i) as AKAutoSortContainer
-    if (chest == possible.chest)
-      return possible
+    i -= 1    
+    if (chest == chests[i])
+      return i
     endif
   EndWhile
 
-  return None
+  return -1
+EndFunction
+
+Int function findEmptyContainerSlot()
+  Int i = chests.Length
+  
+  While i > 0
+    i -= 1
+    if (chests[i] == None)
+      return i
+    endif
+  EndWhile
+
+  return -1
 EndFunction
 
 
 function sortItems()
-  Debug.Notification("Sorting " + player.GetNumItems() + " items to " + self.chests.GetSize() + " chests")
   ObjectReference player = Game.GetPlayer()
-
   Int sortedItems = 0
   Int iPlayerItem = player.GetNumItems()
+
+  Debug.Notification("Sorting " + iPlayerItem + " items")
   
 	While iPlayerItem > 0
 		iPlayerItem -= 1
     Form itemToSort = player.GetNthForm(iPlayerItem)
   
-    Int iChests = self.chests.GetSize()
+    Int iChests = chests.Length
     bool found = false
     While iChests > 0 && !found
       iChests -= 1
-      AKAutoSortContainer chest = chests.GetAt(iChests) as AKAutoSortContainer
-      Debug.Notification("Found chest with " + chest.keywords.GetSize() + " keywords")
+      ObjectReference chest = chests[iChests]
+      ; Debug.Notification("Found chest with " + chest.keywords.GetSize() + " keywords")
       ; ObjectReference chest = chests.GetAt(iChests) as ObjectReference
       If itemToSort.GetType() == Chest1Type 
-        player.RemoveItem(itemToSort, 1, true, chest.chest)
+        player.RemoveItem(itemToSort, 1, true, chest)
         sortedItems += 1
         found = true
       EndIf

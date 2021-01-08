@@ -7,6 +7,5 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
   else
     akquest.addContainer(akNewContainer)
     akNewContainer.RemoveItem(self, 1, true, Game.GetPlayer())
-    Debug.Notification("Marked Storage")
   endIf
 endEvent
