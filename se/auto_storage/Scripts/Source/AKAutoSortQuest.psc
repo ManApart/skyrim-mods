@@ -22,7 +22,7 @@ function removeContainer(ObjectReference containerToRemove)
   if (slot != -1)
     chests[slot] = None
     keywords[slot].Revert()
-    Debug.Notification("Container Removed from slot " + slot)
+    Debug.Notification(containerToRemove.GetDisplayName() + " Removed from slot " + slot)
   endif
 EndFunction
 
@@ -30,7 +30,6 @@ function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToA
   Int slot = findContainerSlot(chestToChange)
   if (slot != -1)
     keywords[slot].addForm(keywordToAdd)
-    Debug.Notification("Size is now " + keywords[slot].GetSize())
   endif
 
 EndFunction
@@ -56,7 +55,7 @@ Int function findContainerSlot(ObjectReference chest)
   While i > 0
     i -= 1    
     if (chest == chests[i])
-      Debug.Notification("Found " + chest.GetDisplayName())
+      ; Debug.Notification("Found " + chest.GetDisplayName())
       return i
     endif
   EndWhile
@@ -84,14 +83,13 @@ function sortItems()
   Int sortedItems = 0
   Int iPlayerItem = player.GetNumItems()
 
-  Debug.Notification("Storing " + iPlayerItem + " items")
+  Debug.Notification("Sorting through " + iPlayerItem + " items")
   
 	While iPlayerItem > 0
 		iPlayerItem -= 1
     Form itemToSort = player.GetNthForm(iPlayerItem)
   
-    if (!player.IsEquipped(itemToSort))
-
+    if (!player.IsEquipped(itemToSort) && !Game.IsObjectFavorited(itemToSort))
       Int slot = chests.Length
       bool found = false
       While slot > 0 && !found
@@ -100,8 +98,7 @@ function sortItems()
         FormList keywordMatches = keywords[slot]
 
         if (keywordMatches.GetSize() > 0 && chest.GetParentCell() == currentCell)
-          
-          Debug.Notification("Found chest with " + keywordMatches.GetSize() + " keywords")
+          ; Debug.Notification("Found chest with " + keywordMatches.GetSize() + " keywords")
           If (keywordsMatch(itemToSort, keywordMatches))
             player.RemoveItem(itemToSort, 1, true, chest)
             sortedItems += 1
