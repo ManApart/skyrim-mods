@@ -9,8 +9,7 @@ function addContainer(ObjectReference containerToAdd)
   Int slot = findEmptyContainerSlot()
   if (slot != -1)
     chests[slot] = containerToAdd
-    Debug.Notification("Added" + containerToAdd.GetDisplayName() + " to slot " + slot)    
-    addKeywordToContainer(containerToAdd, testWord)
+    Debug.Notification("Added" + containerToAdd.GetDisplayName() + " to slot " + slot)        
   else
     Debug.Notification("Can't add more chests, please remove some first")
   endif
@@ -31,16 +30,25 @@ function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToA
   Int slot = findContainerSlot(chestToChange)
   if (slot != -1)
     keywords[slot].addForm(keywordToAdd)
+    Debug.Notification("Size is now " + keywords[slot].GetSize())
   endif
 
 EndFunction
 
-; function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
-;   Int slot = findContainer(chestToChange)
-;   if (chest != None)
-;     chest.keywords.RemoveAddedForm(keywordToRemove)
-;   endif
-; EndFunction
+function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
+  Int slot = findContainerSlot(chestToChange)
+  if (slot != -1)
+    keywords[slot].RemoveAddedForm(keywordToRemove)
+  endif
+EndFunction
+
+FormList function getKeywordsForContainer(ObjectReference chest)
+  Int slot = findContainerSlot(chest)
+  if (slot != -1)
+    return keywords[slot]
+  endif
+  return None
+EndFunction
 
 Int function findContainerSlot(ObjectReference chest)
   Int i = chests.Length
@@ -48,6 +56,7 @@ Int function findContainerSlot(ObjectReference chest)
   While i > 0
     i -= 1    
     if (chest == chests[i])
+      Debug.Notification("Found " + chest.GetDisplayName())
       return i
     endif
   EndWhile
