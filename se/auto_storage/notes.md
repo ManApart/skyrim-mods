@@ -3,6 +3,8 @@ Lesser Powers
 
 Auto Store
 - Stores items in correct containers
+- ignore equipped and favorited items
+- sort by keywords
 
 ### Auto Sort Tool
 
