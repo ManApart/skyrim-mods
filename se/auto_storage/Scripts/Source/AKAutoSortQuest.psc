@@ -1,23 +1,16 @@
 Scriptname AKAutoSortQuest extends Quest  
 
-Int Property Chest1Type = 26 Auto  
+Keyword property testWord Auto
 
-ObjectReference[] chests
-FormList[] keywords 
-FormList[] Property testThings Auto
+ObjectReference[] property chests auto
+FormList[] property keywords auto
 
 function addContainer(ObjectReference containerToAdd)
-  ;initialize list
-  if (chests == None || chests.Length == 0)
-    chests = new ObjectReference[100]
-    keywords = new FormList[100]
-    Debug.Notification("Created " + chests.Length + " slots")
-  endif
-    
   Int slot = findEmptyContainerSlot()
   if (slot != -1)
     chests[slot] = containerToAdd
     Debug.Notification("Added" + containerToAdd.GetDisplayName() + " to slot " + slot)    
+    addKeywordToContainer(containerToAdd, testWord)
   else
     Debug.Notification("Can't add more chests, please remove some first")
   endif
@@ -29,17 +22,18 @@ function removeContainer(ObjectReference containerToRemove)
   Int slot = findContainerSlot(containerToRemove)
   if (slot != -1)
     chests[slot] = None
+    keywords[slot].Revert()
     Debug.Notification("Container Removed from slot " + slot)
   endif
 EndFunction
 
-; function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToAdd)
-;   Int slot = findContainer(chestToChange)
-;   if (chest != None)
-;     chest.keywords.addForm(keywordToAdd)
-;   endif
+function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToAdd)
+  Int slot = findContainerSlot(chestToChange)
+  if (slot != -1)
+    keywords[slot].addForm(keywordToAdd)
+  endif
 
-; EndFunction
+EndFunction
 
 ; function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
 ;   Int slot = findContainer(chestToChange)
@@ -76,31 +70,51 @@ EndFunction
 
 
 function sortItems()
-  ObjectReference player = Game.GetPlayer()
+  Actor player = Game.GetPlayer()
+  Cell currentCell = player.GetParentCell()
   Int sortedItems = 0
   Int iPlayerItem = player.GetNumItems()
 
-  Debug.Notification("Sorting " + iPlayerItem + " items")
+  Debug.Notification("Storing " + iPlayerItem + " items")
   
 	While iPlayerItem > 0
 		iPlayerItem -= 1
     Form itemToSort = player.GetNthForm(iPlayerItem)
   
-    Int iChests = chests.Length
-    bool found = false
-    While iChests > 0 && !found
-      iChests -= 1
-      ObjectReference chest = chests[iChests]
-      ; Debug.Notification("Found chest with " + chest.keywords.GetSize() + " keywords")
-      ; ObjectReference chest = chests.GetAt(iChests) as ObjectReference
-      If itemToSort.GetType() == Chest1Type 
-        player.RemoveItem(itemToSort, 1, true, chest)
-        sortedItems += 1
-        found = true
-      EndIf
-    EndWhile
+    if (!player.IsEquipped(itemToSort))
+
+      Int slot = chests.Length
+      bool found = false
+      While slot > 0 && !found
+        slot -= 1
+        ObjectReference chest = chests[slot]
+        FormList keywordMatches = keywords[slot]
+
+        if (keywordMatches.GetSize() > 0 && chest.GetParentCell() == currentCell)
+          
+          Debug.Notification("Found chest with " + keywordMatches.GetSize() + " keywords")
+          If (keywordsMatch(itemToSort, keywordMatches))
+            player.RemoveItem(itemToSort, 1, true, chest)
+            sortedItems += 1
+            found = true
+          EndIf
+        EndIf
+      EndWhile
+    endIf
 	EndWhile
 
-  Debug.Notification("Sorted " + sortedItems + " items")
+  Debug.Notification("Stored " + sortedItems + " items")
+EndFunction
+
+
+bool function keywordsMatch(Form item, FormList keywordMatches)
+  int i = keywordMatches.GetSize()
+	While i > 0
+    i -= 1
+    if (item.hasKeyword(keywordMatches.GetAt(i) as Keyword))
+      return true
+    endif
+  EndWhile
+  return false
 EndFunction
 
