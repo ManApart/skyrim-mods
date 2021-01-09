@@ -1,17 +1,20 @@
 Scriptname AKAutoSortQuest extends Quest  
 
-Keyword property testWord Auto
-
 ObjectReference[] property chests auto
 FormList[] property keywords auto
 
 function addContainer(ObjectReference containerToAdd)
-  Int slot = findEmptyContainerSlot()
-  if (slot != -1)
-    chests[slot] = containerToAdd
-    Debug.Notification("Added" + containerToAdd.GetDisplayName() + " to slot " + slot)        
+  Int existingSlot = findContainerSlot(containerToAdd)
+  if (existingSlot != -1)
+    Debug.Notification(containerToAdd.GetDisplayName() + " is already tracked in slot " + existingSlot) 
   else
-    Debug.Notification("Can't add more chests, please remove some first")
+    Int slot = findEmptyContainerSlot()
+    if (slot != -1)
+      chests[slot] = containerToAdd
+      Debug.Notification("Added " + containerToAdd.GetDisplayName() + " to slot " + slot)        
+    else
+      Debug.Notification("Can't add more chests, please remove some first")
+    endif
   endif
 
  
@@ -22,7 +25,9 @@ function removeContainer(ObjectReference containerToRemove)
   if (slot != -1)
     chests[slot] = None
     keywords[slot].Revert()
-    Debug.Notification(containerToRemove.GetDisplayName() + " Removed from slot " + slot)
+    Debug.Notification(containerToRemove.GetDisplayName() + " removed from slot " + slot)
+  else
+    Debug.Notification(containerToRemove.GetDisplayName() + " is not tracked")
   endif
 EndFunction
 
@@ -43,6 +48,10 @@ EndFunction
 
 FormList function getKeywordsForContainer(ObjectReference chest)
   Int slot = findContainerSlot(chest)
+  return getKeywordsForContainerSlot(slot)
+EndFunction
+
+FormList function getKeywordsForContainerSlot(Int slot)
   if (slot != -1)
     return keywords[slot]
   endif
