@@ -106,10 +106,11 @@ function sortItems()
         ObjectReference chest = chests[slot]
         FormList keywordMatches = keywords[slot]
 
-        if (keywordMatches.GetSize() > 0 && chest.GetParentCell() == currentCell)
+        if (chest != None && keywordMatches.GetSize() > 0 && chest.GetParentCell() == currentCell)
           ; Debug.Notification("Found chest with " + keywordMatches.GetSize() + " keywords")
           If (keywordsMatch(itemToSort, keywordMatches))
-            player.RemoveItem(itemToSort, 1, true, chest)
+            Int count = player.GetItemCount(itemToSort)
+            player.RemoveItem(itemToSort, count, true, chest)
             sortedItems += 1
             found = true
           EndIf
