@@ -66,19 +66,19 @@ function removeKeyword(ObjectReference chest, Int slot, Int page)
       printCurrentKeywords(currentKeywords)
       Int i = removeKeywordMessages[page].show()
       if (i < 7)
-        mainQuest.addKeywordToContainer(chest, keywords[i + page*10])
+        mainQuest.removeKeywordFromContainer(chest, keywords[i + page*7])
         removeKeyword(chest, slot, page)
       elseif (i == 7)
         if (page >= removeKeywordMessages.Length - 1)
           showMenu(chest)
         else
-          addKeyword(chest, slot, page + 1)
+          removeKeyword(chest, slot, page + 1)
         endif
       elseif (i == 8)
         if (page <= 0)
           showMenu(chest)
         else
-          addKeyword(chest, slot, page - 1)
+          removeKeyword(chest, slot, page - 1)
         endif
       endif
     endif
