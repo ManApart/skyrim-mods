@@ -9,8 +9,7 @@ Message[] Property addKeywordMessages Auto
 Message[] Property removeKeywordMessages Auto
 
 function showMenu(ObjectReference chest)
-  Debug.StartScriptProfiling("AKAutoSortQuest")
-  Bool isTracked = mainQuest.isTracked(chest)
+  Bool isTracked = mainQuest.isChestTracked(chest)
   Int response = AKASMainMenu.show()
   if (response == 0)
     mainQuest.addContainer(chest)
