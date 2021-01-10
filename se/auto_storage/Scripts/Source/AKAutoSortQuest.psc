@@ -1,96 +1,71 @@
 Scriptname AKAutoSortQuest extends Quest  
 
-ObjectReference[] property chests auto
-FormList[] property keywords auto
+Int chestMapK
+
+; cellMap = Map<Cell, List<ObjectReference>>
+; chestMapK = Map<ObjectReference, List<Keyword>>
 
 function addContainer(ObjectReference containerToAdd)
-  Int existingSlot = findContainerSlot(containerToAdd)
-  if (existingSlot != -1)
-    Debug.Notification(containerToAdd.GetDisplayName() + " is already tracked in slot " + existingSlot) 
+  initChestConfig()
+  Bool existing = isTracked(containerToAdd)
+  if (existing)
+    Debug.Notification(containerToAdd.GetDisplayName() + " is already tracked") 
   else
-    Int slot = findEmptyContainerSlot()
-    if (slot != -1)
-      chests[slot] = containerToAdd
-      Debug.Notification("Added " + containerToAdd.GetDisplayName() + " to slot " + slot)        
-    else
-      Debug.Notification("Can't add more chests, please remove some first")
-    endif
+    Int chestKeywordsK = JArray.object()
+    Debug.Trace("AK: chestKeywordsK: " + chestKeywordsK)
+    JFormMap.setObj(chestMapK, containerToAdd, chestKeywordsK)
+    Debug.Trace("AK: MapCount: " + JFormMap.count(chestMapK))
+    persistChestConfig()
+    Debug.Notification("Now Tracking  " + containerToAdd.GetDisplayName())        
   endif
-
- 
 EndFunction
 
 function removeContainer(ObjectReference containerToRemove)
-  Int slot = findContainerSlot(containerToRemove)
-  if (slot != -1)
-    chests[slot] = None
-    keywords[slot].Revert()
-    Debug.Notification(containerToRemove.GetDisplayName() + " removed from slot " + slot)
+  initChestConfig()
+  Bool existing = isTracked(containerToRemove)
+  if (existing)
+    JFormMap.setObj(chestMapK, containerToRemove, 0)
+    persistChestConfig()
+    Debug.Notification(containerToRemove.GetDisplayName() + " removed from tracking")
   else
     Debug.Notification(containerToRemove.GetDisplayName() + " is not tracked")
   endif
 EndFunction
 
 function addKeywordToContainer(ObjectReference chestToChange, Keyword keywordToAdd)
-  Int slot = findContainerSlot(chestToChange)
-  if (slot != -1)
-    keywords[slot].addForm(keywordToAdd)
-  endif
-
+  initChestConfig()
+  Int chestKeywordsK = JFormMap.getObj(chestMapK, chestToChange)
+  JArray.addForm(chestKeywordsK, keywordToAdd)
+  persistChestConfig()
 EndFunction
 
 function removeKeywordFromContainer(ObjectReference chestToChange, Keyword keywordToRemove)
-  Int slot = findContainerSlot(chestToChange)
-  if (slot != -1)
-    keywords[slot].RemoveAddedForm(keywordToRemove)
-  endif
+  initChestConfig()
+  Int chestKeywordsK = JFormMap.getObj(chestMapK, chestToChange)
+  JArray.eraseForm(chestKeywordsK, keywordToRemove)
+  persistChestConfig()
 EndFunction
 
-FormList function getKeywordsForContainer(ObjectReference chest)
-  Int slot = findContainerSlot(chest)
-  return getKeywordsForContainerSlot(slot)
+Form[] function getKeywordsForContainer(ObjectReference chest)
+  initChestConfig()
+  Int chestKeywordsK = JFormMap.getObj(chestMapK, chest)
+  return JArray.asFormArray(chestKeywordsK)
 EndFunction
 
-FormList function getKeywordsForContainerSlot(Int slot)
-  if (slot != -1)
-    return keywords[slot]
-  endif
-  return None
+Bool function isTracked(ObjectReference chest)
+  initChestConfig()
+  Debug.Trace("AK: Checking " + chestMapK + " that has " + JFormMap.count(chestMapK) + " keys")
+  return JFormMap.hasKey(chestMapK, chest)
 EndFunction
-
-Int function findContainerSlot(ObjectReference chest)
-  Int i = chests.Length
-  
-  While i > 0
-    i -= 1    
-    if (chest == chests[i])
-      ; Debug.Notification("Found " + chest.GetDisplayName())
-      return i
-    endif
-  EndWhile
-
-  return -1
-EndFunction
-
-Int function findEmptyContainerSlot()
-  Int i = chests.Length
-  
-  While i > 0
-    i -= 1
-    if (chests[i] == None)
-      return i
-    endif
-  EndWhile
-
-  return -1
-EndFunction
-
 
 function sortItems()
+  Debug.StartStackProfiling()
+  initChestConfig()
   Actor player = Game.GetPlayer()
   Cell currentCell = player.GetParentCell()
   Int sortedItems = 0
   Int iPlayerItem = player.GetNumItems()
+  Form[] chests2 = JFormMap.allKeysPArray(chestMapK)
 
   Debug.Notification("Sorting through " + iPlayerItem + " items")
   
@@ -99,14 +74,17 @@ function sortItems()
     Form itemToSort = player.GetNthForm(iPlayerItem)
   
     if (!player.IsEquipped(itemToSort) && !Game.IsObjectFavorited(itemToSort))
-      Int slot = chests.Length
+      Int slot = chests2.Length
       bool found = false
+
       While slot > 0 && !found
         slot -= 1
-        ObjectReference chest = chests[slot]
-        FormList keywordMatches = keywords[slot]
+        ObjectReference chest = chests2[slot] as ObjectReference
+        Int keywordsK = JFormMap.getObj(chestMapK, chest)
+        Form[] keywordMatches = JArray.asFormArray(keywordsK)
 
-        if (chest != None && keywordMatches.GetSize() > 0 && chest.GetParentCell() == currentCell)
+        
+        if (chest != None && keywordMatches.Length > 0 && chest.GetParentCell() == currentCell)
           ; Debug.Notification("Found chest with " + keywordMatches.GetSize() + " keywords")
           If (keywordsMatch(itemToSort, keywordMatches))
             Int count = player.GetItemCount(itemToSort)
@@ -120,17 +98,40 @@ function sortItems()
 	EndWhile
 
   Debug.Notification("Stored " + sortedItems + " items")
+  Debug.StopStackProfiling()
 EndFunction
 
 
-bool function keywordsMatch(Form item, FormList keywordMatches)
-  int i = keywordMatches.GetSize()
+bool function keywordsMatch(Form item, Form[] keywordMatches)
+  Debug.Trace("AK: matching")
+  int i = keywordMatches.Length
 	While i > 0
     i -= 1
-    if (item.hasKeyword(keywordMatches.GetAt(i) as Keyword))
+    if (item.hasKeyword(keywordMatches[i] as Keyword))
       return true
     endif
   EndWhile
   return false
+EndFunction
+
+function initChestConfig()
+  ;Load from saves
+  if (chestMapK == 0)
+    chestMapK = JValue.readFromFile(JContainers.userDirectory() + "ak_auto_store/chestConfig.json")
+    JDB.setObj("ak_auto_store", chestMapK)
+  endif
+
+  ;Create a new one
+  if (chestMapK == 0)
+    chestMapK = JFormMap.object()
+    JDB.setObj("ak_auto_store", chestMapK)
+    persistChestConfig()
+  endif
+EndFunction
+
+function persistChestConfig()
+  Debug.Trace("AK: Saving " + chestMapK)
+  JValue.writeToFile(chestMapK, JContainers.userDirectory() + "ak_auto_store/chestConfig.json")
+  Debug.Trace("AK: Saved Config")
 EndFunction
 

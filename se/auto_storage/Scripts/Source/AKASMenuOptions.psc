@@ -9,89 +9,86 @@ Message[] Property addKeywordMessages Auto
 Message[] Property removeKeywordMessages Auto
 
 function showMenu(ObjectReference chest)
-  Int existingSlot = mainQuest.findContainerSlot(chest)
+  Debug.StartScriptProfiling("AKAutoSortQuest")
+  Bool isTracked = mainQuest.isTracked(chest)
   Int response = AKASMainMenu.show()
   if (response == 0)
     mainQuest.addContainer(chest)
     showMenu(chest)    
+  elseif (response == 1 && isTracked)
+    addKeyword(chest, 0)
   elseif (response == 1)
-    addKeyword(chest, existingSlot, 0)
+    Debug.Notification(chest.getDisplayName() + " is not tracked")
+    showMenu(chest)
+  elseif (response == 2 && isTracked)
+    removeKeyword(chest, 0)
   elseif (response == 2)
-    removeKeyword(chest, existingSlot, 0)
+    Debug.Notification(chest.getDisplayName() + " is not tracked")
+    showMenu(chest)
   elseif (response == 3)
     mainQuest.removeContainer(chest)
   else
   endif
 EndFunction
 
-function addKeyword(ObjectReference chest, Int slot, Int page)  
-  if (slot == -1)
-    Debug.Notification(chest.getDisplayName() + " is not tracked")
+function addKeyword(ObjectReference chest, Int page)  
+  Form[] currentKeywords = mainQuest.getKeywordsForContainer(chest)
+  printCurrentKeywords(currentKeywords)
+  Int i = addKeywordMessages[page].show()
+
+  if (i < 7)
+    mainQuest.addKeywordToContainer(chest, keywords[i + page*7])
+    addKeyword(chest, page)
+  elseif (i == 7)
+    if (page >= addKeywordMessages.Length - 1)
+      showMenu(chest)
+    else
+      addKeyword(chest, page + 1)
+    endif
+  elseif (i == 8)
+    if (page <= 0)
+      showMenu(chest)
+    else
+      addKeyword(chest, page - 1)
+    endif
+  endif
+
+EndFunction
+
+function removeKeyword(ObjectReference chest, Int page)
+  Form[] currentKeywords = mainQuest.getKeywordsForContainer(chest)
+  if (currentKeywords.Length == 0)
+    Debug.Notification("No keywords to remove")
     showMenu(chest)
   else
-    FormList currentKeywords = mainQuest.getKeywordsForContainerSlot(slot)
     printCurrentKeywords(currentKeywords)
-    Int i = addKeywordMessages[page].show()
-
+    Int i = removeKeywordMessages[page].show()
     if (i < 7)
-      mainQuest.addKeywordToContainer(chest, keywords[i + page*7])
-      addKeyword(chest, slot, page)
+      mainQuest.removeKeywordFromContainer(chest, keywords[i + page*7])
+      removeKeyword(chest, page)
     elseif (i == 7)
-      if (page >= addKeywordMessages.Length - 1)
+      if (page >= removeKeywordMessages.Length - 1)
         showMenu(chest)
       else
-        addKeyword(chest, slot, page + 1)
+        removeKeyword(chest, page + 1)
       endif
     elseif (i == 8)
       if (page <= 0)
         showMenu(chest)
       else
-        addKeyword(chest, slot, page - 1)
-      endif
-    endif
-  endif
-
-EndFunction
-
-function removeKeyword(ObjectReference chest, Int slot, Int page)
-  if (slot == -1)
-    Debug.Notification(chest.getDisplayName() + " is not tracked")
-    showMenu(chest)
-  else
-    FormList currentKeywords = mainQuest.getKeywordsForContainerSlot(slot)
-    if (currentKeywords.GetSize() == 0)
-      Debug.Notification("No keywords to remove")
-      showMenu(chest)
-    else
-      printCurrentKeywords(currentKeywords)
-      Int i = removeKeywordMessages[page].show()
-      if (i < 7)
-        mainQuest.removeKeywordFromContainer(chest, keywords[i + page*7])
-        removeKeyword(chest, slot, page)
-      elseif (i == 7)
-        if (page >= removeKeywordMessages.Length - 1)
-          showMenu(chest)
-        else
-          removeKeyword(chest, slot, page + 1)
-        endif
-      elseif (i == 8)
-        if (page <= 0)
-          showMenu(chest)
-        else
-          removeKeyword(chest, slot, page - 1)
-        endif
+        removeKeyword(chest, page - 1)
       endif
     endif
   endif
 EndFunction
 
-function printCurrentKeywords(FormList currentKeywords)
-  Int i = currentKeywords.GetSize()
+function printCurrentKeywords(Form[] currentKeywords)
+  Int i = currentKeywords.Length
   if (i > 0)
     String messageOutput = ""
     While i > 0
       i -= 1    
-      Keyword word = currentKeywords.GetAt(i) as Keyword
+      Keyword word = currentKeywords[i] as Keyword
       messageOutput += word.GetString() + ", "
     EndWhile
     Debug.Notification("Current Keywords: " + messageOutput)
