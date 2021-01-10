@@ -24,6 +24,23 @@ NOTE: Chest config is not stored as part of your save, but instead in config fil
 
 One Quest does all the logic. The sort tool has a script that when added to a container passes that container reference to the quest. So there are no scripts added to containers, no custom containers etc. Tracking a chest is done by adding it's reference to the quest (which then saves it with JContainer). This means other than adding items to chests, I'm not touching them, and they should be safe regardless of uninstalls etc.
 
+Here's a performance breakdown, with 260 items in the player inventory and a single chest. I was/am frustrated with how slow this is and made a custom tool to parse the papyrus profile logs to see if I could identify bottlenecks. (Average Total is wait time + process time, which is effectively no difference). KeywordsMatch and hasKeyword increases for each chest added.
+
+| Name                | Count | Average Wait | Average Total | Total Time |
+| ------------------- | ----- | ------------ | ------------- | ---------- |
+| StartStackProfiling | 1     | 0            | 64766         | 64766      |
+| GetNthForm          | 260   | 23           | 23            | 6091       |
+| IsEquipped          | 260   | 18           | 18            | 4703       |
+| IsObjectFavorited   | 250   | 16           | 16            | 4157       |
+| keywordsMatch       | 245   | 0            | 16            | 4064       |
+| HasKeyword          | 245   | 16           | 16            | 4047       |
+| GetItemCount        | 20    | 27           | 27            | 544        |
+| RemoveItem          | 20    | 16           | 18            | 370        |
+| Notification        | 1     | 17           | 17            | 17         |
+| getObj              | 245   | 0            | 0             | 1          |
+| asFormArray         | 245   | 0            | 0             | 1          |
+| StopStackProfiling  | 1     | 0            | -84798        | -84798     |
+
 ## FAQ
 
 Q: The Auto Sort Tool is not coming back to my inventory
