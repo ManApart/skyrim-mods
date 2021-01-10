@@ -45,3 +45,4 @@ A: No, I don't mod anymore, and just built this for myself when playing skyrim a
 
 [Automatic Storage](https://www.nexusmods.com/skyrimspecialedition/mods/8224) For the idea of adding an item to a container to mark it without attaching a script to it.
 [JContainers](https://www.nexusmods.com/skyrimspecialedition/mods/16495?tab=description): After finding this resource I rewrote nearly the whole mod. I'm so glad someone brought some sanity to the limitations of papyrus.
+[Profiling Tool](https://papyrusprofilingparser.com/) For helping me to understand some of what makes papyrus so slow
