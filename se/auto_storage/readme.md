@@ -10,6 +10,8 @@ A keyword based, balanced sorting mod. Configure any containers you want. Once c
 
 ## Usage
 
+View an unedited video of me setting up my personal save [here](https://youtu.be/Nex_oC7Kyk0). Note that I'm using [Jaxonz Renamer](https://www.nexusmods.com/skyrimspecialedition/mods/14694) to make the chest names match what they're sorting.
+
 Install with vortex
 
 When you load your save you should get an Auto Sort Tool (misc object) and Auto Sort (Lesser Power).
